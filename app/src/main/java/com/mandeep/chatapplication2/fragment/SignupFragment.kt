@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.BitmapCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -84,10 +85,6 @@ class SignupFragment : Fragment() {
 
         binding.profileImageView.setOnClickListener {
             launcher.launch("image/*")
-            bitmap?.let {
-                binding.profileImageView.setImageBitmap(it)
-            }
-          //  findNavController().navigate(R.id.usersFragment)
         }
 
         binding.SignUpButton.setOnClickListener {
@@ -97,9 +94,11 @@ class SignupFragment : Fragment() {
             phone = binding.phoneInput.editText?.text.toString()
             val bitmapString = bitmap?.let { MBitmap.encodeBitmap(it) }
 
+            Log.d("fidnfdf",bitmapString.toString())
             auth.createUserWithEmailAndPassword(email, password).addOnSuccessListener {
                 Toast.makeText(context,"Sign Up Successfully",Toast.LENGTH_LONG).show()
                 sharedPreferenceManager.putBoolean(IS_SIGNED_IN,true)
+
 
                 val map = hashMapOf(  KEY_USERNAME to username,
                     KEY_EMAIL to email,
@@ -112,18 +111,14 @@ class SignupFragment : Fragment() {
                 collection.add(map).addOnSuccessListener {
 
                     sharedPreferenceManager.putString(KEY_USER_ID,it.id)
-                   // findNavController().popBackStack()
-                    findNavController().popBackStack(R.id.usersFragment,true)
+                    sharedPreferenceManager.putString(KEY_USERNAME,username)
+                    
+                    findNavController().popBackStack()
                     findNavController().navigate(R.id.usersFragment)
 
-                }.addOnFailureListener {
-                    Log.d("vgfudvd",it.message.toString())
-                }
+                }.addOnFailureListener { Log.d("vgfudvd",it.message.toString()) }
                 Log.d("dfgindfvd",collection.id+" ")
-
-            }.addOnFailureListener {
-                Log.d("fdsdifnsdf",it.message.toString())
-            }
+            }.addOnFailureListener { Log.d("fdsdifnsdf",it.message.toString()) }
         }
 
     }
@@ -134,19 +129,8 @@ class SignupFragment : Fragment() {
             it?.let {
                val ipStream = context?.contentResolver?.openInputStream(it)
                  bitmap = BitmapFactory.decodeStream(ipStream)
+                binding.profileImageView.setImageBitmap(bitmap)
             }
         })
 
-
-
-    override fun onResume() {
-        super.onResume()
-        Toast.makeText(requireContext(),sharedPreferenceManager.getBoolean(IS_SIGNED_IN).toString(),Toast.LENGTH_SHORT).show()
-
-        if(sharedPreferenceManager.getBoolean(IS_SIGNED_IN))
-        {
-            findNavController().navigate(R.id.usersFragment)
-        }
-
-    }
 }

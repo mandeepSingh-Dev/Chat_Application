@@ -1,5 +1,6 @@
 package com.mandeep.chatapplication2.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -57,12 +58,19 @@ class UsersFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val userId = sharedPreferenceManager.getString(Constants.KEY_USER_ID)
-        binding.userIdTextView.text = userId
+        val userName = sharedPreferenceManager.getString(Constants.KEY_USERNAME)
+        //binding.userIdTextView.text = "$userName  $userId"
 
+        lifecycleScope.launch {
+            firebaseViewmodel.getReceiverInfo(userId!!).collect {
+                binding.userIdTextView.text = it
+            }
+        }
 
         adapter = UsersAdapter(requireContext())
         CoroutineScope(mainDispatcher).launch {

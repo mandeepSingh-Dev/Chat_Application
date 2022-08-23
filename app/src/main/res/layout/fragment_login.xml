@@ -10,6 +10,7 @@
       android:id="@+id/LoginHeader"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:textColor="@color/black"
       app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"
@@ -30,32 +31,70 @@
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"
     android:orientation="vertical">
-    <EditText
+    <com.google.android.material.textfield.TextInputLayout
       android:id="@+id/edittextEmail"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-      android:inputType="textEmailAddress"
-      android:hint="Email"/>
-
-    <EditText
-        android:id="@+id/edittextpassword"
-        android:layout_width="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:inputType="textEmailAddress"
-        android:hint="Password"/>
+        app:boxStrokeColor="@color/purple_200"
+        app:boxStrokeErrorColor="@color/black"
+        app:boxStrokeWidth="2dp"
+
+      >
+      <com.google.android.material.textfield.TextInputEditText
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+        android:hint="Enter your Email here.."/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edittextpassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:inputType="textEmailAddress"
+        app:boxStrokeColor="@color/purple_200"
+        app:boxStrokeErrorColor="@color/black"
+        app:boxStrokeWidth="2dp"
+        >
+      <com.google.android.material.textfield.TextInputEditText
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:inputType="textEmailAddress"
+          android:hint="Enter your Password here.."/>
+    </com.google.android.material.textfield.TextInputLayout>
+
 
 
     <com.google.android.material.button.MaterialButton
       android:id="@+id/LoginButton"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
       android:layout_marginTop="70dp"
       app:cornerRadius="30dp"
       android:text="Login"
+
       android:layout_gravity="center"
       android:textAllCaps="false"/>
-
+    <TextView
+      android:id="@+id/orTExtview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+      android:text="or"
+      android:layout_gravity="center"/>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/signupButton"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        app:cornerRadius="30dp"
+        android:backgroundTint="#1565C0"
+        android:text="Sign Up"
+        android:layout_gravity="center"
+        android:textAllCaps="false"/>
   </LinearLayout>
 
 

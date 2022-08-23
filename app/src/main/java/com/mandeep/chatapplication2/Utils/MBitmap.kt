@@ -2,14 +2,15 @@ package com.mandeep.chatapplication2.Utils
 
 import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
+import androidx.annotation.RequiresApi
 import java.io.ByteArrayOutputStream
 import java.lang.Exception
 
@@ -26,19 +27,20 @@ companion object {
         return byteArray.toString()
     }
 
-    fun decodeBitmap(bitmapString: String): Bitmap {
+    fun decodeBitmap(bitmapString: String): Bitmap? {
         try {
             val byteArray = Base64.decode(bitmapString, Base64.DEFAULT)
             val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+            Log.d("dfdfefv",bitmap.toString())
             return bitmap
         } catch (e: Exception) {
-            return Bitmap.createBitmap(130, 130, Bitmap.Config.ARGB_8888)
+            Log.d("fidnf3r3fd",e.message.toString())
+            return null
         }
     }
 
 
-    fun saveToStorage(context: Context,bitmap: Bitmap):Pair<String,Boolean> {
-
+    fun saveToStorage(context: Context, bitmap: Bitmap):String {
 
         val displayName = "msgImage${System.currentTimeMillis()}"
 
@@ -49,25 +51,22 @@ companion object {
             put(MediaStore.Images.ImageColumns.BUCKET_ID,System.currentTimeMillis().toString())
         }
         val insertedUri = context.contentResolver.insert(uri,contentValues)
-        var isStored = insertedUri?.let {
+        val isStored = insertedUri?.let {
             val out = context.contentResolver.openOutputStream(it)
             val isStoredd = bitmap.compress(Bitmap.CompressFormat.JPEG,100,out)
             isStoredd
         }
-        val pair = isStored?.let {
-            Log.d("fkdnfd",displayName)
-            Pair(displayName,isStored) }
-                Log.d("fidnfdf",pair?.first.toString())
-        return pair!!
+        return displayName!!
     }
 
-    fun getBitmapFromStorage(context: Context,displayName : String):Bitmap{
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun getBitmapFromStorage(context: Context, displayName : String):Bitmap{
         var bitmap:Bitmap?=null
         val selction = MediaStore.Images.Media.RELATIVE_PATH + " LIKE: ?"
         val selctionArg = arrayOf("% $displayName %" )
 
       val cursor =   context.contentResolver.query(uri,null,selction,selctionArg,null,null)
-        cursor?.let { cursor ->
+        cursor?.let { cursorr ->
             val displayNameColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DISPLAY_NAME)
             val relativePathColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.RELATIVE_PATH)
             val idColumn = cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID)
@@ -78,11 +77,12 @@ companion object {
                 val id = cursor.getLong(idColumn)
 
                 val finalUri = Uri.withAppendedPath(uri,id.toString())
+                Log.d("doggfndgd",finalUri.toString())
                 val ipStream = context.contentResolver.openInputStream(finalUri)
-                ipStream
                 bitmap = BitmapFactory.decodeStream(ipStream)
             }
         }
+        cursor?.close()
         return bitmap!!
     }
 }

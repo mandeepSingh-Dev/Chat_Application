@@ -84,8 +84,8 @@
                 android:id="@+id/phoneEdittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:hint="Username"  />
+                android:inputType="number"
+                android:hint="Phone"  />
 
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -102,7 +102,7 @@
                 android:id="@+id/emailEdittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName"
+                android:inputType="textEmailAddress"
                 android:hint="Email" />
 
 
@@ -120,7 +120,7 @@
                 android:id="@+id/passwordEdittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName"
+                android:inputType="textPassword"
                 android:hint="Password"
                 />
         </com.google.android.material.textfield.TextInputLayout>

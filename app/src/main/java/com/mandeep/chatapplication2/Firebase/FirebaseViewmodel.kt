@@ -11,6 +11,7 @@ import com.mandeep.chatapplication2.SharedPreferenceManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -22,8 +23,9 @@ class FirebaseViewmodel @Inject constructor(private val firebaseFirestore: Fireb
 
     lateinit var usersList : Flow<List<User>>
     lateinit var chatList : Flow<List<Chat>>
-    lateinit var bitmap :Bitmap
+     lateinit var bitmap :Bitmap
      lateinit var imageBitmap : Flow<Bitmap>
+
 
 
      var _num = MutableStateFlow<Int>(1)
@@ -39,6 +41,10 @@ class FirebaseViewmodel @Inject constructor(private val firebaseFirestore: Fireb
     val receiverId : StateFlow<String>
     get() = _receiverId
 
+    var receiverInfo = MutableStateFlow<String?>(null)
+    val receiverInfoState:StateFlow<String?>
+    get() = receiverInfo
+
     init {
 
         usersList = callbackFlow {
@@ -53,7 +59,8 @@ class FirebaseViewmodel @Inject constructor(private val firebaseFirestore: Fireb
                         val userId = it.id.toString()
                         val email = it.getString(Constants.KEY_EMAIL).toString()
                         val password = it.getString(Constants.KEY_PASSWORD).toString()
-                        val user = User(username = username, phone = phone, userId = userId, email = email, password = password)
+                        val imageString = it.getString(Constants.KEY_IMAGE)
+                        val user = User(username = username, phone = phone, userId = userId, email = email, password = password, imageString = imageString)
                         arrlist.add(user)
                     }
                 }
@@ -74,8 +81,9 @@ class FirebaseViewmodel @Inject constructor(private val firebaseFirestore: Fireb
                     val receiverId = it.getString(Constants.KEY_RECEIVER_ID).toString()
                     val message  = it.getString(Constants.KEY_MESSAGE).toString()
                     val timeStamp = it.getString(Constants.KEY_TIMESTAMP).toString()
+                    val imagePath = it.getString(Constants.KEY_IMAGE).toString()
 
-                    chatarraylist.add(Chat(senderId = senderId, receiverId = receiverId, message = message,timeStamp = timeStamp))
+                    chatarraylist.add(Chat(senderId = senderId, receiverId = receiverId, message = message,timeStamp = timeStamp,imagePath = imagePath))
                 }
                 trySend(chatarraylist)
             }
@@ -134,7 +142,18 @@ class FirebaseViewmodel @Inject constructor(private val firebaseFirestore: Fireb
         }
     }
 
-
-
+    suspend fun getReceiverInfo(receiverId:String):Flow<String>{
+       return  channelFlow {
+            val job = firebaseFirestore.collection(Constants.KEY_COLLECTION_USER).document(receiverId).addSnapshotListener { value, error ->
+                val username = value?.getString(Constants.KEY_USERNAME)
+                //        viewModelScope.launch {
+                username?.let { trySend(username) }
+                //      }
+            }
+           awaitClose{
+               job.remove()
+           }
+        }
+    }
 
 }
