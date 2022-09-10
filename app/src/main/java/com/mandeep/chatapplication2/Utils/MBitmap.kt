@@ -40,7 +40,7 @@ companion object {
     }
 
 
-    fun saveToStorage(context: Context, bitmap: Bitmap):String {
+    fun saveToStorage(context: Context, bitmap: Bitmap):Boolean {
 
         val displayName = "msgImage${System.currentTimeMillis()}"
 
@@ -56,7 +56,7 @@ companion object {
             val isStoredd = bitmap.compress(Bitmap.CompressFormat.JPEG,100,out)
             isStoredd
         }
-        return displayName!!
+        return isStored!!
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)

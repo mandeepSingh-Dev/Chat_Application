@@ -1,30 +1,31 @@
 package com.mandeep.chatapplication2.fragment
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.mandeep.chatapplication2.Constants
 import com.mandeep.chatapplication2.Firebase.FirebaseViewmodel
-import com.mandeep.chatapplication2.Firebase.User
-import com.mandeep.chatapplication2.Firebase.UsersAdapter
+import com.mandeep.chatapplication2.Firebase.data_Classes.User
+import com.mandeep.chatapplication2.Firebase.Adapters.UsersAdapter
 import com.mandeep.chatapplication2.R
 import com.mandeep.chatapplication2.SharedPreferenceManager
 import com.mandeep.chatapplication2.databinding.FragmentUsersBinding
-import com.mandeep.chatapplication2.databinding.UserItemBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainCoroutineDispatcher
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,11 +35,15 @@ class UsersFragment : Fragment() {
 
     lateinit var binding:FragmentUsersBinding
 
-    val firebaseViewmodel by lazy {
-        ViewModelProvider(this).get(FirebaseViewmodel::class.java)
-    }
+    @Inject
+    lateinit var firebaseAuth:FirebaseAuth
 
-    lateinit var adapter : UsersAdapter
+    val firebaseViewmodel:FirebaseViewmodel by viewModels()
+/*by lazy {
+        ViewModelProvider(this).get(FirebaseViewmodel::class.java)
+    }*/
+
+    lateinit var userAdapter : UsersAdapter
 
     @Inject
     lateinit var firestore: FirebaseFirestore
@@ -47,9 +52,13 @@ class UsersFragment : Fragment() {
     @Inject
     lateinit var mainDispatcher:MainCoroutineDispatcher
 
+    lateinit var navController: NavController
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("finjdfd","onCreate")
         super.onCreate(savedInstanceState)
         Log.d("dfjd675485844bfd",firebaseViewmodel.toString())
+        navController = findNavController()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -58,48 +67,51 @@ class UsersFragment : Fragment() {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
+
         val userId = sharedPreferenceManager.getString(Constants.KEY_USER_ID)
         val userName = sharedPreferenceManager.getString(Constants.KEY_USERNAME)
         //binding.userIdTextView.text = "$userName  $userId"
+        val username = sharedPreferenceManager.getString(Constants.KEY_USERNAME)
+        binding.userIdTextView?.text = username.toString()
 
         lifecycleScope.launch {
             firebaseViewmodel.getReceiverInfo(userId!!).collect {
-                binding.userIdTextView.text = it
+             //   binding.userIdTextView.text = it.username.toString()
             }
+
+
         }
 
-        adapter = UsersAdapter(requireContext())
-        CoroutineScope(mainDispatcher).launch {
-            firebaseViewmodel.usersList.collect{
-                Log.d("dfidnfd",it.size.toString())
-                val linearLayoutManager = LinearLayoutManager(requireContext())
-                binding.usersRecyclerView.layoutManager = linearLayoutManager
-                binding.usersRecyclerView.adapter = adapter
-                adapter.setData(it as ArrayList<User>)
-
-                adapter.setOnCustomClickListener(object:UsersAdapter.CustomOnClickListener{
-                    override fun onCustomClick(position: Int,user:User) {
-                        val bundle = Bundle()
-                        bundle.putString(Constants.KEY_RECEIVER_ID,user.userId)
-                        bundle.putString(Constants.KEY_USERNAME,user.username)
-                        findNavController().navigate(R.id.chatsFragment,bundle)
-                    }
-                })
+        userAdapter = UsersAdapter(requireContext(),firebaseViewmodel)
+        //changes from CoroutineScope to lifecycleScope
+        lifecycleScope.launch {
+            firebaseViewmodel.usersList.collect{ userList->
+                Log.d("dfidnfd",userList.size.toString())
+                userAdapter.setData(userList as ArrayList<User> /* = java.util.ArrayList<com.mandeep.chatapplication2.Firebase.data_Classes.User> */)
             }
         }
+        setUpRecycleView()
+
 
         var number = 0
         binding.addUser.setOnClickListener {
 
-            number++
-            firebaseViewmodel._num.value = number
+            navController.navigate(UsersFragmentDirections.actionUsersFragmentToStoryFragment())
+
+
+           // number++
+           // firebaseViewmodel._num.value = number
         }
-             CoroutineScope(Dispatchers.Main).launch {
-            firebaseViewmodel.state.collect{
+        //changes from CoroutineScope to lifecycleScope
+        lifecycleScope.launch {
+            firebaseViewmodel.num1.collect{
                 binding.addUser.text = it.toString()
             }
          /*   val map = hashMapOf(  Constants.KEY_USERNAME to "username"+System.currentTimeMillis().toString(),
@@ -114,6 +126,31 @@ class UsersFragment : Fragment() {
             }*/
         }
 
+
+        binding.logoutbutton.setOnClickListener {
+        if(firebaseAuth.currentUser!=null) {
+            firebaseAuth.signOut()
+            val navOptions = NavOptions.Builder().setPopUpTo(R.id.loginFragment,true)
+            navController.navigate(R.id.loginFragment,null,navOptions.build())
+        }
+            else{
+                Toast.makeText(requireContext(),"current user is null",Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
+    fun setUpRecycleView(){
+        val linearLayoutManager = LinearLayoutManager(requireContext())
+        binding.usersRecyclerView.layoutManager = linearLayoutManager
+        binding.usersRecyclerView.adapter = userAdapter
+
+        userAdapter.setOnCustomClickListener(object: UsersAdapter.CustomOnClickListener{
+            override fun onCustomClick(position: Int,user: User) {
+                val bundle = Bundle()
+                bundle.putString(Constants.KEY_RECEIVER_ID,user.userId)
+                bundle.putString(Constants.KEY_USERNAME,user.username)
+                navController.navigate(R.id.chatsFragment,bundle)
+            }
+        })
+    }
 }

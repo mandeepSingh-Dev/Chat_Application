@@ -2,11 +2,16 @@ package com.mandeep.chatapplication2
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 
 class SharedPreferenceManager(context: Context) {
 
     lateinit var sharedPreferenceManager: SharedPreferences
     lateinit var editor:SharedPreferences.Editor
+
+    val message = "Message"
+
     init{
         sharedPreferenceManager  = context.getSharedPreferences(Constants.KEY_SHAREDPREFERENCE,Context.MODE_PRIVATE)
         editor = sharedPreferenceManager.edit()

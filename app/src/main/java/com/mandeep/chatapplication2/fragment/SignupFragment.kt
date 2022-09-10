@@ -23,11 +23,15 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.mandeep.chatapplication2.Constants
 import com.mandeep.chatapplication2.Constants.IS_SIGNED_IN
+import com.mandeep.chatapplication2.Constants.KEY_COLOR
+import com.mandeep.chatapplication2.Constants.KEY_DOC_ID
 import com.mandeep.chatapplication2.Constants.KEY_EMAIL
 import com.mandeep.chatapplication2.Constants.KEY_ID
 import com.mandeep.chatapplication2.Constants.KEY_IMAGE
+import com.mandeep.chatapplication2.Constants.KEY_IS_ONLINE
 import com.mandeep.chatapplication2.Constants.KEY_PASSWORD
 import com.mandeep.chatapplication2.Constants.KEY_PHONE
+import com.mandeep.chatapplication2.Constants.KEY_RECENT_TIME
 import com.mandeep.chatapplication2.Constants.KEY_USERNAME
 import com.mandeep.chatapplication2.Constants.KEY_USER_ID
 import com.mandeep.chatapplication2.Firebase.FirebaseViewmodel
@@ -52,6 +56,8 @@ class SignupFragment : Fragment() {
     lateinit var auth:FirebaseAuth
     @Inject
     lateinit var firestore:FirebaseFirestore
+    @Inject
+    lateinit var firebaseFirestore: FirebaseFirestore
     @Inject
     lateinit var sharedPreferenceManager: SharedPreferenceManager
 
@@ -105,15 +111,23 @@ class SignupFragment : Fragment() {
                     KEY_PASSWORD to password,
                     KEY_PHONE to phone,
                     KEY_IMAGE to bitmapString,
-                    KEY_ID to System.currentTimeMillis().toString())
+                    KEY_ID to System.currentTimeMillis().toString(),
+                    KEY_IS_ONLINE to true,
+                    KEY_RECENT_TIME to System.currentTimeMillis().toString(),
+                    KEY_COLOR to null,
+                    KEY_DOC_ID to null
+                )
 
-                val collection = firestore.collection("Users")
+                val collection = firestore.collection(Constants.KEY_COLLECTION_USER)
                 collection.add(map).addOnSuccessListener {
 
                     sharedPreferenceManager.putString(KEY_USER_ID,it.id)
                     sharedPreferenceManager.putString(KEY_USERNAME,username)
-                    
-                    findNavController().popBackStack()
+
+                    firebaseFirestore.collection(Constants.KEY_COLLECTION_USER).document(it.id.toString()).update(Constants.KEY_DOC_ID,it.id.toString())
+
+
+                  //  findNavController().popBackStack()
                     findNavController().navigate(R.id.usersFragment)
 
                 }.addOnFailureListener { Log.d("vgfudvd",it.message.toString()) }

@@ -9,7 +9,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.FirebaseOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.mandeep.chatapplication2.Constants
@@ -34,9 +36,17 @@ class LoginFragment : Fragment() {
 
     val firebaseViewmodel:FirebaseViewmodel by viewModels()
     lateinit var binding : FragmentLoginBinding
+    lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState) }
+        super.onCreate(savedInstanceState)
+      navController = findNavController()
+
+        if(firebaseAuth.currentUser!=null)
+        {
+            navController.navigate(R.id.usersFragment)
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentLoginBinding.inflate(LayoutInflater.from(requireContext()))
@@ -57,13 +67,13 @@ class LoginFragment : Fragment() {
                 lifecycleScope.launch {
                     firebaseViewmodel.usersList.collect{userlistt->
                         userlistt.forEach { user->
-                            Log.d("digfndf",user.email)
+                            Log.d("digfndf",user.email.toString())
                             if (user.email.equals(email))
                             {
                                // sharedPreferenceManager.setB
                                 sharedPreferenceManager.putBoolean(Constants.IS_SIGNED_IN,true)
-                                sharedPreferenceManager.putString(Constants.KEY_USER_ID,user.userId)
-                                sharedPreferenceManager.putString(Constants.KEY_USERNAME,user.username)
+                                sharedPreferenceManager.putString(Constants.KEY_USER_ID,user.userId.toString())
+                                sharedPreferenceManager.putString(Constants.KEY_USERNAME,user.username.toString())
                                 findNavController().navigate(R.id.usersFragment)
                             }
                         }
@@ -79,11 +89,13 @@ class LoginFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
+   /* override fun onResume() {
         super.onResume()
-        if(sharedPreferenceManager.getBoolean(Constants.IS_SIGNED_IN))
+       *//* if(sharedPreferenceManager.getBoolean(Constants.IS_SIGNED_IN))
         {
-            findNavController().navigate(R.id.usersFragment)
-        }
-    }
+            //findNavController().navigate(R.id.usersFragment)
+          //  navController.navigate(R.id.action_loginFragment_to_usersFragment)
+            navController.navigate(LoginFragmentDirections.actionLoginFragmentToUsersFragment())
+        }*//*
+    }*/
 }
