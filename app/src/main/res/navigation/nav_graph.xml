@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.mandeep.chatapplication2.fragment.LoginFragment"
+        android:name="com.mandeep.chatapplication4.fragment.LoginFragment"
         android:label="LoginFragment" >
         <action
             android:id="@+id/action_loginFragment_to_signupFragment"
@@ -23,7 +23,7 @@
     </fragment>
     <fragment
         android:id="@+id/signupFragment"
-        android:name="com.mandeep.chatapplication2.fragment.SignupFragment"
+        android:name="com.mandeep.chatapplication4.fragment.SignupFragment"
         android:label="SignupFragment"
         >
         <action
@@ -35,7 +35,7 @@
     </fragment>
     <fragment
         android:id="@+id/usersFragment"
-        android:name="com.mandeep.chatapplication2.fragment.UsersFragment"
+        android:name="com.mandeep.chatapplication4.fragment.UsersFragment"
         android:label="UsersFragment" >
         <action
             android:id="@+id/action_usersFragment_to_chatsFragment"
@@ -49,11 +49,11 @@
     </fragment>
     <fragment
         android:id="@+id/chatsFragment"
-        android:name="com.mandeep.chatapplication2.fragment.ChatsFragment"
+        android:name="com.mandeep.chatapplication4.fragment.ChatsFragment"
         android:label="ChatsFragment" />
     <fragment
         android:id="@+id/storyFragment"
-        android:name="com.mandeep.chatapplication2.fragment.StoryFragment"
+        android:name="com.mandeep.chatapplication4.fragment.StoryFragment"
         android:label="fragment_story"
         tools:layout="@layout/fragment_story" >
         <action
@@ -62,7 +62,7 @@
     </fragment>
     <fragment
         android:id="@+id/storyPresentationFragment"
-        android:name="com.mandeep.chatapplication2.fragment.StoryPresentationFragment"
+        android:name="com.mandeep.chatapplication4.fragment.StoryPresentationFragment"
         android:label="StoryPresentationFragment" >
         <action
             android:id="@+id/action_storyPresentationFragment_to_storyFragment"

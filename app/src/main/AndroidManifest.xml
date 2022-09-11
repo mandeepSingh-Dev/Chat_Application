@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.mandeep.chatapplication2"
-    tools:ignore="ExtraText">
+    package="com.mandeep.chatapplication4"
+   >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission
@@ -10,7 +10,7 @@
         tools:ignore="ScopedStorage" />
 
     <application
-        android:name=".di.BaseApp"
+        android:name="com.mandeep.chatapplication4.di.BaseApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -21,10 +21,10 @@
         android:theme="@style/Theme.ChatApplication2"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity2"
+            android:name="com.mandeep.chatapplication4.MainActivity2"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.mandeep.chatapplication4.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Material3.Light.NoActionBar">
             <intent-filter>
@@ -35,7 +35,7 @@
         </activity>
 
         <service
-            android:name=".MyService.ClosingService"
+            android:name="com.mandeep.chatapplication4.MyService.ClosingService"
             android:stopWithTask="false" />
 
         <meta-data
@@ -49,7 +49,7 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/white" />
         <service
-            android:name=".MyService.MyNotificationListenerService"
+            android:name="com.mandeep.chatapplication4.MyService.MyNotificationListenerService"
             android:exported="true"
             android:enabled="true"
             android:label="MyNotificationListenerService"
@@ -69,10 +69,10 @@
             -->
         </service>
         <service
-            android:name=".MyService.MessageService"
+            android:name="com.mandeep.chatapplication4.MyService.MessageService"
             android:exported="true" />
         <service
-        android:name=".MyService.MyFirebaseMessagingService"
+        android:name="com.mandeep.chatapplication4.MyService.MyFirebaseMessagingService"
             android:exported="true"
             android:enabled="true"
             >
